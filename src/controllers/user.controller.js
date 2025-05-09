@@ -1,6 +1,85 @@
 import userService from "../services/user.service.js";
+import jwt from "jsonwebtoken";
 
 class UserController {
+  async Login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ message: "Missing require fields" });
+      }
+      console.log("controller: ", email, password);
+
+      const token = await userService.Login(email, password);
+      if (!token) {
+        return res
+          .status(404)
+          .json({ message: "Error logging in user at service" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Login successfully", data: token });
+    } catch (err) {
+      next(err);
+      return res.status(500).json({ message: "Error logging in user" });
+    }
+  }
+
+  async Register(req, res) {
+    try {
+      const { username, email, password } = req.body;
+
+      if (!username || !email || !password) {
+        return res.status(400).json({ message: "Missing require fields" });
+      }
+
+      const user = await userService.Register(username, email, password);
+      // console.log("user: ",user);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: "Error registering user at service" });
+      }
+      return res
+        .status(201)
+        .json({ message: "User registered successfully", data: user });
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  }
+//------------------------------------------------------
+  async refreshToken(req, res, next) {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res.status(400).json({ message: "Refresh token is required" });
+      }
+
+      const tokens = await userService.refreshAccessToken(refreshToken);
+      if (!tokens) {
+        return res.status(401).json({ message: "Invalid refresh token" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Token refreshed successfully", data: tokens });
+    } catch (err) {
+      next(err);
+      return res.status(500).json({ message: "Error refreshing token" });
+    }
+  }
+//------------------------------------------------------
+  async logout(req, res, next) {
+    try {
+      res.clearCookie("refreshToken"); 
+      return res.status(200).json({ message: "Logged out successfully" });
+    } catch (err) {
+      next(err);
+      return res.status(500).json({ message: "Error logging out" });
+    }
+  }
+
   async GetAll(req, res, next) {
     try {
       const users = await userService.GetAll();
