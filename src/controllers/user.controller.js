@@ -1,7 +1,33 @@
 import userService from "../services/user.service.js";
+import { mailService } from "../configs/sendMail.config.js";
 import jwt from "jsonwebtoken";
 
 class UserController {
+  async SendEmail(req, res, next) {
+    try {
+      const email = req.body.email;
+
+      const mailOptions = {
+        emailFrom: "TrungKienSgroup@gmail.com",
+        emailTo: email,
+        emailSubject: "Test Email",
+        emailText: "This is a test email",
+      };
+
+      const result = await mailService.sendMail(mailOptions);
+      if (!result) {
+        return res.status(404).json({ message: "Error sending email" });
+      }
+      console.log("result: ", result);
+      return res
+        .status(200)
+        .json({ message: "Email sent successfully", data: result });
+    } catch (err) {
+      next(err);
+      return res.status(500).json({ message: "Error logging in user" });
+    }
+  }
+
   async Login(req, res, next) {
     try {
       const { email, password } = req.body;
@@ -48,38 +74,6 @@ class UserController {
       return res.status(500).json(err);
     }
   }
-//------------------------------------------------------
-  async refreshToken(req, res, next) {
-    try {
-      const { refreshToken } = req.body;
-      if (!refreshToken) {
-        return res.status(400).json({ message: "Refresh token is required" });
-      }
-
-      const tokens = await userService.refreshAccessToken(refreshToken);
-      if (!tokens) {
-        return res.status(401).json({ message: "Invalid refresh token" });
-      }
-
-      return res
-        .status(200)
-        .json({ message: "Token refreshed successfully", data: tokens });
-    } catch (err) {
-      next(err);
-      return res.status(500).json({ message: "Error refreshing token" });
-    }
-  }
-//------------------------------------------------------
-  async logout(req, res, next) {
-    try {
-      res.clearCookie("refreshToken"); 
-      return res.status(200).json({ message: "Logged out successfully" });
-    } catch (err) {
-      next(err);
-      return res.status(500).json({ message: "Error logging out" });
-    }
-  }
-
   async GetAll(req, res, next) {
     try {
       const users = await userService.GetAll();
@@ -137,6 +131,47 @@ class UserController {
         return res.status(404).json("Not Found");
       }
       return res.status(200).json("Deleted Successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+  async ForgotPassword(req, res, next) {
+    try {
+      const email = req.body.email;
+      if (!email) {
+        return res.status(400).json({ message: "Missing email" });
+      }
+      const result = await userService.ForgotPassword(email);
+      if (!result) {
+        return res.status(404).json({ message: "Error sending email" });
+      }
+      return res
+        .status(200)
+        .json({ message: "Email sent successfully", data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async ResetPassword(req, res, next) {
+    try {
+      // const resetToken= req.headers["resetToken"];
+      // console.log("resetToken: ", resetToken);
+
+      // const verifiedToken = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
+
+      const otp = req.body.otp;
+      const email = req.body.email;
+      const password = req.body.password;
+      if (!password) {
+        return res.status(400).json({ message: "Missing password" });
+      }
+      const result = await userService.ResetPassword(otp, email, password);
+      if (!result) {
+        return res.status(404).json({ message: "Error resetting password" });
+      }
+      return res
+        .status(200)
+        .json({ message: "Password reset successfully", data: result });
     } catch (error) {
       next(error);
     }

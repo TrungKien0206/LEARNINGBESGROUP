@@ -15,8 +15,11 @@ router
   .put(authenticateJWT, UserController.Update)
   .delete(authenticateJWT, UserController.Delete);
 
+router.route("/email").post(UserController.SendEmail);
+router.route("/forgot-pass").post(UserController.ForgotPassword);
+router.route("/reset-pass").post(UserController.ResetPassword);
+
 router.route("/register").post(UserController.Register);
 router.route("/login").post(UserController.Login);
-router.post("/refresh-token", UserController.refreshToken);
-router.post("/logout", UserController.logout);
+
 export default router;
