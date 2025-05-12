@@ -18,6 +18,9 @@ router
 router.route("/email").post(UserController.SendEmail);
 router.route("/forgot-pass").post(UserController.ForgotPassword);
 router.route("/reset-pass").post(UserController.ResetPassword);
+// router
+//   .route("/change-password")
+//   .post(authenticateJWT, UserController.ChangePassword);
 
 router.route("/register").post(UserController.Register);
 router.route("/login").post(UserController.Login);

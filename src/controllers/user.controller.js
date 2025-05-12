@@ -176,6 +176,28 @@ class UserController {
       next(error);
     }
   }
+
+  async ChangePassword(req, res, next) {
+    try {
+      const userId = req.user.id; 
+      const { oldPassword, newPassword } = req.body;
+
+      if (!oldPassword || !newPassword) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const result = await userService.ChangePassword(
+        userId,
+        oldPassword,
+        newPassword
+      );
+      return res
+        .status(200)
+        .json({ message: "Password changed successfully", data: result });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 export default new UserController();
