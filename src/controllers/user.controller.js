@@ -10,8 +10,8 @@ class UserController {
       const mailOptions = {
         emailFrom: "TrungKienSgroup@gmail.com",
         emailTo: email,
-        emailSubject: "Test Email",
-        emailText: "This is a test email",
+        emailSubject: "THÔNG TIN",
+        emailText: "Hello Chào Buổi Tối KIÊN ĐẸP TRAI",
       };
 
       const result = await mailService.sendMail(mailOptions);
@@ -154,11 +154,6 @@ class UserController {
   }
   async ResetPassword(req, res, next) {
     try {
-      // const resetToken= req.headers["resetToken"];
-      // console.log("resetToken: ", resetToken);
-
-      // const verifiedToken = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
-
       const otp = req.body.otp;
       const email = req.body.email;
       const password = req.body.password;
@@ -177,27 +172,27 @@ class UserController {
     }
   }
 
-  async ChangePassword(req, res, next) {
-    try {
-      const userId = req.user.id; 
-      const { oldPassword, newPassword } = req.body;
+  // async ChangePassword(req, res, next) {
+  //   try {
+  //     const userId = req.user.id;
+  //     const { oldPassword, newPassword } = req.body;
 
-      if (!oldPassword || !newPassword) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
+  //     if (!oldPassword || !newPassword) {
+  //       return res.status(400).json({ message: "Missing required fields" });
+  //     }
 
-      const result = await userService.ChangePassword(
-        userId,
-        oldPassword,
-        newPassword
-      );
-      return res
-        .status(200)
-        .json({ message: "Password changed successfully", data: result });
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  }
+  //     const result = await userService.ChangePassword(
+  //       userId,
+  //       oldPassword,
+  //       newPassword
+  //     );
+  //     return res
+  //       .status(200)
+  //       .json({ message: "Password changed successfully", data: result });
+  //   } catch (error) {
+  //     return res.status(500).json({ message: error.message });
+  //   }
+  // }
 }
 
 export default new UserController();
