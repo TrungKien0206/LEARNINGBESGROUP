@@ -1,4 +1,4 @@
-console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
+import jwt from "jsonwebtoken";
 
 export const authenticateJWT = (req, res, next) => {
   try {
@@ -18,7 +18,7 @@ export const authenticateJWT = (req, res, next) => {
     }
     console.log("Decoded Token: ", decoded);
 
-    req.user = decoded; 
+    req.decoded = decoded;
     next();
   } catch (err) {
     return res

@@ -1,6 +1,5 @@
 import userService from "../services/user.service.js";
 import { mailService } from "../configs/sendMail.config.js";
-import jwt from "jsonwebtoken";
 
 class UserController {
   async SendEmail(req, res, next) {
@@ -10,8 +9,8 @@ class UserController {
       const mailOptions = {
         emailFrom: "TrungKienSgroup@gmail.com",
         emailTo: email,
-        emailSubject: "THÔNG TIN",
-        emailText: "Hello Chào Buổi Tối KIÊN ĐẸP TRAI",
+        emailSubject: "THÔNG TIN QUAN TRỌNG",
+        emailText: "Hello bro tui là Trung Kiên, chúc bro một ngày vui :))",
       };
 
       const result = await mailService.sendMail(mailOptions);
@@ -54,14 +53,17 @@ class UserController {
 
   async Register(req, res) {
     try {
-      const { username, email, password } = req.body;
-
-      if (!username || !email || !password) {
+      const useradd = req.body;
+      if (!useradd.username || !useradd.email || !useradd.password) {
         return res.status(400).json({ message: "Missing require fields" });
       }
-
-      const user = await userService.Register(username, email, password);
-      // console.log("user: ",user);
+      console.log("đã kiểm thử");
+      const user = await userService.Register(
+        useradd.username,
+        useradd.email,
+        useradd.password,
+        useradd
+      );
       if (!user) {
         return res
           .status(404)
@@ -74,6 +76,7 @@ class UserController {
       return res.status(500).json(err);
     }
   }
+
   async GetAll(req, res, next) {
     try {
       const users = await userService.GetAll();
@@ -152,6 +155,7 @@ class UserController {
       next(error);
     }
   }
+
   async ResetPassword(req, res, next) {
     try {
       const otp = req.body.otp;
@@ -171,28 +175,6 @@ class UserController {
       next(error);
     }
   }
-
-  // async ChangePassword(req, res, next) {
-  //   try {
-  //     const userId = req.user.id;
-  //     const { oldPassword, newPassword } = req.body;
-
-  //     if (!oldPassword || !newPassword) {
-  //       return res.status(400).json({ message: "Missing required fields" });
-  //     }
-
-  //     const result = await userService.ChangePassword(
-  //       userId,
-  //       oldPassword,
-  //       newPassword
-  //     );
-  //     return res
-  //       .status(200)
-  //       .json({ message: "Password changed successfully", data: result });
-  //   } catch (error) {
-  //     return res.status(500).json({ message: error.message });
-  //   }
-  // }
 }
 
 export default new UserController();
